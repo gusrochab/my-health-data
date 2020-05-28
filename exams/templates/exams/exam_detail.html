@@ -1,0 +1,25 @@
+{% extends "exams/base.html" %}
+{% block content %}
+    <article class="media content-section">
+        <div class="media-body">
+            <div class="article-metadata">
+                <small class="text-muted">{{ object.date_posted|date:"F d, Y" }}</small>
+                {% if object.author == user %}
+                    <div>
+                        <a class="btn btn-secondary btn-sm mt-1 mb-1" href="{% url 'exam-update' object.id%}">Update</a>
+                        <a class="btn btn-danger btn-sm mt-1 mb-1" href="{% url 'exam-delete' object.id%}">Delete</a>
+                    </div>
+                {% endif %}
+            </div>
+            <div class="container">
+                <h2 class="article-title">{{ object.title }}</h2>
+                <p class="article-content">{{ object.description }}</p>
+                <a class="article-title" href="{{ object.image.url }}">
+                    <img class="article-img" src="{{ object.image.url }}">
+                </a>
+                <h3 class="article-title">Exam text</h3>
+                <p class="article-content">{{ object.text_from_img }}</p>
+            </div>
+        </div>
+    </article>
+{% endblock content %}
