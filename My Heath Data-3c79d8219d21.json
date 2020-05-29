@@ -1,0 +1,12 @@
+{
+  "type": "service_account",
+  "project_id": "my-heath-data",
+  "private_key_id": "3c79d8219d21c4b893c0ab18ec4f1b8bacb02108",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQDF2hYBB7qIL6ey\nb4aGQnKFtwcXuPIB/hjI4Zqi4yUr0Lul8hO36EF34KHN4rbVNIKuF2rZ+FoPPImn\naaYCrbD9cLkD00P2LxJerW05mxJB/q/kKS+S7cssidgOy5Bhgl5vDL90/d5pCjMz\n8h/nj4BKbAOx8pTwRrCqw6Lp8IXOCesT5uGZfsWQ7YMhEeAQq3+/Q5POlU3EVGmp\nwSm51gfivQSzJbpnZJqgV0o0wd4pdcquqRvj2UyFcxTiav3QulTlac6yXaAtc2CX\nK/ROMhv5wTP9Thr2j6zPa/bSNppqvdwIOlc15j481JR3XUDeeB74PXZB0zeqD2a5\nzb3RsupHAgMBAAECggEAVg+OALa26aQpAtHGJ0JiBE3f1O7Kvhkj+MVBeVbqhUuP\nRBivgRCS4a0hVKgoNUdZDJb9EIEZ04TWr66h2opo8WUF5WcRKdXB3NL9LtCIOZKq\nOcm8euHava3cAFuFmxSVNSLLaP1AsFoSeab5P8VI3ZZsaQwGwxlMoYrlo3LPERaz\n+M932tfmWnHIq2IsgVGTTYw6OxC5UxY60eZLAbfWEfugb+xz1tM7+cJVp4soA3VV\nlxNDY5J4Q0Dwo00cJpcxcQ0BUprCOuqkOVqgdC2Ji6h8+XYcN6Y3gEoMjf3UFLqE\nONd+UWjMd1A0EkBjbLFY+rRDrehe70aqvblJk/Y8kQKBgQD/wOsTpGzM47FNKXTx\nGOZANQKbh/6mSqIzp76awm2pp+0TukgS1bNQ7WisO0HTv1YwUjjp0ddfNEcUyLvc\n9Vwm3pruAEnntYsFkH2oTen5F/IHSYRv0CvERANXY92zJyuivdQP4ozVeaTBlZ0L\nFLdCVBqBxrgjd+Gba5ECcWvfLwKBgQDGCuLejxoGYKHm8tGoUyTRxfoHIF5zyWip\n3rCNOWMSVtnxB7F3AqnWCIwJg6LVitOOynTlpl8binkYyO1NtPuzuznv2UsFvxF7\n3e4IDJ7n6n4tEikT3u42PLW17Rvq98Ep/CzUnNxMKMrWXv6G5+3Wgda6KV35ZKR6\nHJXN6LmgaQKBgC8KNrKYLYLJ5lSA6YdmwwLQPTiKHOZNF+RUWBRy6mSoBEz6mEMO\nlzqtT/FNvN/Lc3jTxrAK7ogOP3ytJxCO+HIVw30/BFjf5UASwWnxWrV8GAILHZbL\nPSGOOOcb8S0AaWA3dget7aVeCFWqxQXCu6oxeeagvEGZzR8e+77tSZ/1AoGAWBrX\nu3OmfFfZL0mvhFcY9kpBZZI88v4Tlh8AJJP3Q11oMBbgGLYSoKnEwybQ9neAjvH6\n94AAp9v+68vX5s4xfFA7Aj2FZtUODjE5iFM1Dq//2kVOCQ0QpQh1Pq5x0SLPyMHr\nn9r5Fti/BIfWbGYaJWg2AzQMHrtrgPfenXB/xKECgYB03JPmgFyFuDpOiDeOr2r0\nUN8ikmFWSUfudCM7znr7Usf+RL/p+LQUtsy+AXisx92SunM2gcWz7YjiS3yLMCyB\nUcvrzBiBuZB1FrOTD17fSCU4cG+ZRywIinEYfqhFv5dHpbnuewUrh5CLA09/xFAY\nuPpwAivfT/OtYEYUIKhDWw==\n-----END PRIVATE KEY-----\n",
+  "client_email": "service-account@my-heath-data.iam.gserviceaccount.com",
+  "client_id": "115248015681478076840",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/service-account%40my-heath-data.iam.gserviceaccount.com"
+}
