@@ -8,7 +8,7 @@ from django.urls import reverse
 from django.http import HttpResponse
 from .forms import ExamForm
 from .models import Exam
-# from .exam_to_text import get_text
+from .exam_to_text import get_text
 
 
 def home(request):
@@ -41,8 +41,8 @@ def ExamCreateView(request):
             cwd_dir = '/'.join(os.getcwd().split('/'))
             image_file = request.FILES['image']
             image_path = '{}/media/exam_pics/{}'.format(cwd_dir, image_file)
-            # text_from_img = get_text(image_path)
-            instance.text_from_img = 'text_from_img'
+            text_from_img = get_text(image_path)
+            instance.text_from_img = text_from_img
             instance.save()
             # TODO parse_text(text_from_image)
             return redirect(reverse('exam-detail', kwargs={'pk': instance.pk}))
