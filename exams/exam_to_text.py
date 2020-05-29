@@ -194,13 +194,14 @@ def get_text_from_lines(inspection_points, word_boxes):
     wb = copy.deepcopy(word_boxes)
     full_text = []
     for line in inspection_points:
-        line_text = []
+        line_text = ''
         for inspection_point in line:
             point = Point(inspection_point)
             for i in range(len(wb) - 1):
                 polygon = Polygon(wb[i].vertices)
                 if polygon.contains(point):
-                    line_text.append(wb[i].text)
+                    line_text += wb[i].text
+                    line_text += ' '
                     wb.pop(i)
         full_text.append(line_text)
     return full_text
