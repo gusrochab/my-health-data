@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'storages',
+    'django_q',
 ]
 
 MIDDLEWARE = [
@@ -155,3 +156,25 @@ AWS_DEFAULT_ACL = None
 DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 
 django_heroku.settings(locals())
+
+
+# settings.py example
+Q_CLUSTER = {
+    'name': 'my_health_data',
+    'workers': 8,
+    'recycle': 500,
+    'timeout': 60,
+    'compress': True,
+    'save_limit': 250,
+    'queue_limit': 500,
+    'cpu_affinity': 1,
+    'label': 'Django Q',
+    'redis': {
+        'host' = env.str('REDIS_HOST', 'default host'),
+        'password' = env.str('REDIS_PASSWORD', 'default password'),
+        'port' = env.int('REDIS_PORT', 'default 6300'),
+        # 'host': os.environ.get('REDIS_HOST'),
+        # 'password': os.environ.get('REDIS_PASSWORD'),
+        # 'port': os.environ.get('REDIS_PORT'),
+        'db': 0,}
+}

@@ -1,4 +1,5 @@
 import os
+import time
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
@@ -38,6 +39,7 @@ def ExamCreateView(request):
             instance = exam_form.save(commit=False)
             instance.author = request.user
             instance.save()
+            time.sleep(2)
             cwd_dir = '/'.join(os.getcwd().split('/'))
             image_file = request.FILES['image']
             image_path = '{}/media/exam_pics/{}'.format(cwd_dir, image_file)
