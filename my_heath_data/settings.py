@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 
 import os
 import django_heroku
+from environs import Env
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -158,6 +159,8 @@ DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 django_heroku.settings(locals())
 
 
+env = Env()
+
 # settings.py example
 Q_CLUSTER = {
     'name': 'my_health_data',
@@ -170,11 +173,12 @@ Q_CLUSTER = {
     'cpu_affinity': 1,
     'label': 'Django Q',
     'redis': {
-        'host' = env.str('REDIS_HOST', 'default host'),
-        'password' = env.str('REDIS_PASSWORD', 'default password'),
-        'port' = env.int('REDIS_PORT', 'default 6300'),
-        # 'host': os.environ.get('REDIS_HOST'),
-        # 'password': os.environ.get('REDIS_PASSWORD'),
-        # 'port': os.environ.get('REDIS_PORT'),
+        'host': env.str('REDIS_HOST', 'default host'),
+        'password': env.str('REDIS_PASSWORD', 'default password'),
+        'port': env.int('REDIS_PORT', 'default 6300'),
         'db': 0,}
 }
+
+# 'host': os.environ.get('REDIS_HOST'),
+# 'password': os.environ.get('REDIS_PASSWORD'),
+# 'port': os.environ.get('REDIS_PORT'),
