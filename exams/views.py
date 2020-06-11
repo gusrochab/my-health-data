@@ -1,6 +1,7 @@
 import os
 import logging
 from django_q.tasks import async_task
+from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
@@ -46,12 +47,14 @@ def ExamCreateView(request):
             instance.author = request.user
             instance.save()
             cwd_dir = '/'.join(os.getcwd().split('/'))
-            image_file = request.FILES['image']
-            image_path = '{}/media/exam_pics/{}'.format(cwd_dir, image_file)
+            image_file = instance.image
+            image_path = f'https://my-heath-data.s3.amazonaws.com/{image_file}'
+            #image_path = '{}/media/exam_pics/{}'.format(cwd_dir, image_file)
             exam_id = instance.id
             async_task(get_text, image_path, exam_id)
             #text_from_img = get_text(image_path, exam_id)
             # TODO parse_text(text_from_image)
+            messages.success(request, f'We are analyzing your exam.')
             return render(request, 'exams/home.html')
             # return redirect(reverse('exam-detail', kwargs={'pk': instance.pk}))
         else:
