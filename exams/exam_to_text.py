@@ -5,6 +5,8 @@ import matplotlib.pyplot as plt
 import os
 import statistics
 import numpy as np
+from .forms import ExamForm
+from .models import Exam
 from google.cloud import vision
 from PIL import Image
 from shapely.geometry import Point
@@ -242,7 +244,7 @@ def save_file(text_from_lines, img_file):
             f.write('\n')
 
 
-def get_text(img_file):
+def get_text(img_file, exam_id):
     response, img_array = get_response(img_file)
     pages = get_pages(response)
 
@@ -253,6 +255,11 @@ def get_text(img_file):
         filtered_center_lines = filter_center_lines(img_array, center_lines)
         inspection_points = get_inspection_points(img_array, filtered_center_lines, blocks_vertices, 100)
         text_from_lines = get_text_from_lines(inspection_points, word_boxes)
+
+        text_from_lines = '\n'.join(text_from_lines)
+        exam = Exam.objects.get(id=exam_id)
+        exam.text_from_img = text_from_lines
+        exam.save()
 
         # draw_block_boxes(img_array, blocks_vertices, thickness=1)
         # draw_center_lines(img_array, filtered_center_lines, thickness=1)

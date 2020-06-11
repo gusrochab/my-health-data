@@ -11,8 +11,8 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 """
 
 import os
-import django_heroku
-from environs import Env
+# import django_heroku
+# from environs import Env
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -30,8 +30,8 @@ SECRET_KEY = os.environ.get('SECRET_KEY')
 DEBUG = True #(os.environ.get('DEBUG_VALUE') == 'True')
 #DEBUG = True
 
-ALLOWED_HOSTS = ['myheathdata.herokuapp.com', 'localhost']
-
+# ALLOWED_HOSTS = ['myheathdata.herokuapp.com', 'localhost', '127.0.0.1:6379']
+ALLOWED_HOSTS = ['*']
 
 # Application definition
 
@@ -158,10 +158,28 @@ DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 
 django_heroku.settings(locals())
 
+#
+# env = Env()
+#
 
-env = Env()
+# # For localhost
+# Q_CLUSTER = {
+#     'name': 'my_health_data',
+#     'workers': 8,
+#     'recycle': 500,
+#     'timeout': 60,
+#     'compress': True,
+#     'save_limit': 250,
+#     'queue_limit': 500,
+#     'cpu_affinity': 1,
+#     'label': 'Django Q',
+#     'redis': {
+#         'host': '127.0.0.1',
+#         'port': 6379,
+#         'db': 0, }
+# }
 
-# settings.py example
+# For heroku
 Q_CLUSTER = {
     'name': 'my_health_data',
     'workers': 8,
@@ -173,12 +191,16 @@ Q_CLUSTER = {
     'cpu_affinity': 1,
     'label': 'Django Q',
     'redis': {
-        'host': env.str('REDIS_HOST', 'default host'),
-        'password': env.str('REDIS_PASSWORD', 'default password'),
-        'port': env.int('REDIS_PORT', 'default 6300'),
+        'host': 'ec2-54-225-191-123.compute-1.amazonaws.com',
+        'password': 'pd9816d9e8467220ce53ac4a06a6e380bc58950f475f124fb93a46953253b38c8',
+        'port': 25439,
         'db': 0,}
 }
 
+
+# 'host': env.str('REDIS_HOST', 'default host'),
+# 'password': env.str('REDIS_PASSWORD', 'default password'),
+# 'port': env.int('REDIS_PORT', 6300),
 # 'host': os.environ.get('REDIS_HOST'),
 # 'password': os.environ.get('REDIS_PASSWORD'),
 # 'port': os.environ.get('REDIS_PORT'),

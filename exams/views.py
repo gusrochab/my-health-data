@@ -1,5 +1,6 @@
 import os
-import time
+import logging
+from django_q.tasks import async_task
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
@@ -10,6 +11,11 @@ from django.http import HttpResponse
 from .forms import ExamForm
 from .models import Exam
 from .exam_to_text import get_text
+
+logging.basicConfig(filename="views.log", level=logging.DEBUG,
+                   format='%(asctime)s:%(levelname)s:%(message)s')
+
+
 
 
 def home(request):
@@ -39,16 +45,15 @@ def ExamCreateView(request):
             instance = exam_form.save(commit=False)
             instance.author = request.user
             instance.save()
-            time.sleep(2)
             cwd_dir = '/'.join(os.getcwd().split('/'))
             image_file = request.FILES['image']
             image_path = '{}/media/exam_pics/{}'.format(cwd_dir, image_file)
-            text_from_img = get_text(image_path)
-            text_from_img = '\n'.join(text_from_img)
-            instance.text_from_img = text_from_img
-            instance.save()
+            exam_id = instance.id
+            async_task(get_text, image_path, exam_id)
+            #text_from_img = get_text(image_path, exam_id)
             # TODO parse_text(text_from_image)
-            return redirect(reverse('exam-detail', kwargs={'pk': instance.pk}))
+            return render(request, 'exams/home.html')
+            # return redirect(reverse('exam-detail', kwargs={'pk': instance.pk}))
         else:
             return HttpResponse("{}".format(exam_form.errors))
     else:
