@@ -11,7 +11,7 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 """
 
 import os
-# import django_heroku
+import django_heroku
 # from environs import Env
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
