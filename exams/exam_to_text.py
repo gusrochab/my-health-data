@@ -16,7 +16,7 @@ from shapely.geometry.polygon import Polygon
 from .word_box import WordBox
 
 
-logging.basicConfig(filename="get_text_from_line.log", level=logging.DEBUG,
+logging.basicConfig(filename="exam_to_text.log", level=logging.WARNING,
                    format='%(asctime)s:%(levelname)s:%(message)s')
 
 
@@ -45,6 +45,7 @@ def get_response(image_file):
     response = client.document_text_detection(image=vision_image)
     image = Image.open(BytesIO(image_binary))
     image_array = np.array(image)
+    logging.warning("################# Ran get_response #####################")
     return response, image_array
 
 
@@ -271,7 +272,12 @@ def get_text(image_file, exam_id):
 
         text_from_lines = '\n'.join(text_from_lines)
         exam = Exam.objects.get(id=exam_id)
+        logging.warning("-------exam--------")
+        logging.warning(type(exam))
+        logging.warning(exam)
         exam.text_from_image = text_from_lines
+        logging.warning("-------exam--------")
+        logging.warning(exam)
         exam.save()
 
         # draw_block_boxes(image_array, blocks_vertices, thickness=1)
@@ -280,6 +286,8 @@ def get_text(image_file, exam_id):
 
         # save_file(text_from_lines, image_file)
         # save_image(image_array, image_file)
+        logging.warning("################# Ran get_text #####################")
+        logging.warning(text_from_lines)
         return text_from_lines
 
 

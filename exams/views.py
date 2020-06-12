@@ -50,7 +50,7 @@ def ExamCreateView(request):
             image_file = str(instance.image)
             # image_path = f'https://my-heath-data.s3.amazonaws.com/{image_file}'
             # image_path = '{}/media/exam_pics/{}'.format(cwd_dir, image_file)
-            exam_id = instance.id
+            exam_id = int(instance.id)
             async_task(get_text, image_file, exam_id)
             #text_from_img = get_text(image_path, exam_id)
             # TODO parse_text(text_from_image)
