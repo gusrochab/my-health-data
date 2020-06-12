@@ -1,3 +1,4 @@
+import boto3
 import copy
 import io
 import logging
@@ -14,25 +15,38 @@ from shapely.geometry.polygon import Polygon
 from .word_box import WordBox
 
 
-# logging.basicConfig(filename="get_text_from_line.log", level=logging.DEBUG,
-#                    format='%(asctime)s:%(levelname)s:%(message)s')
+logging.basicConfig(filename="get_text_from_line.log", level=logging.DEBUG,
+                   format='%(asctime)s:%(levelname)s:%(message)s')
 
 
-def get_response(img_file):
+def get_response(image_file):
     """
-    :param img_file: Image path
+    :param image_file: Image path
     :return: Response from google Vision API and a image array
     """
 
-    with io.open(img_file, 'rb') as f:
-        img_binary = f.read()
+    AWS_ACCESS_KEY_ID = os.environ.get("AWS_ACCESS_KEY_ID")
+    AWS_SECRET_ACCESS_KEY = os.environ.get("AWS_SECRET_ACCESS_KEY")
+    AWS_STORAGE_BUCKET_NAME = os.environ.get("AWS_STORAGE_BUCKET_NAME")
 
-    vision_img = vision.types.Image(content=img_binary)
+    s3 = boto3.client('s3',
+                      aws_access_key_id=AWS_ACCESS_KEY_ID,
+                      aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
+                      region_name='sa-east-1')
+
+    image_binary = s3.get_object(Bucket=AWS_STORAGE_BUCKET_NAME, Key=image_file)['Body'].read()
+    logging.info(type(image_binary))
+    logging.info(image_binary)
+
+    # with io.open(image_file, 'rb') as f:
+    #     image_binary = f.read()
+
+    vision_image = vision.types.Image(content=image_binary)
     client = vision.ImageAnnotatorClient()
-    response = client.document_text_detection(image=vision_img)
-    image = Image.open(img_file)
-    img_array = np.array(image)
-    return response, img_array
+    response = client.document_text_detection(image=vision_image)
+    image = Image.open(image_file)
+    image_array = np.array(image)
+    return response, image_array
 
 
 def get_pages(response):
@@ -89,9 +103,9 @@ def get_box_center_point(word_vetices):
     return (x_med, y_med)
 
 
-def get_center_lines(img_array, word_boxes):
+def get_center_lines(image_array, word_boxes):
     """
-    :param img_array: Image in array format
+    :param image_array: Image in array format
     :param word_boxes: list of WordBox objects
     :return: Start and end points for each line in document
     """
@@ -103,7 +117,7 @@ def get_center_lines(img_array, word_boxes):
         right_point = (int((word_box.vertices[1][0] + word_box.vertices[2][0]) / 2),
                        int((word_box.vertices[1][1] + word_box.vertices[2][1]) / 2))
         a, b = get_line_parameters(left_point, right_point)
-        max_x = img_array.shape[1]
+        max_x = image_array.shape[1]
         # y = ax + b
         initial_point = (0, int(0 * a + b))
         final_point = (max_x, int(max_x * a + b))
@@ -122,9 +136,9 @@ def get_line_parameters(p1, p2):
     return (a, b)
 
 
-def filter_center_lines(img_array, center_lines, slope_filter=0.01, y_filter=10):
+def filter_center_lines(image_array, center_lines, slope_filter=0.01, y_filter=10):
     """
-    :param img_array: Image in array format
+    :param image_array: Image in array format
     :param center_lines: List of lines points
     :param slope_filter: aceptable degrees difference between a line slope and the mean line slope
     :param y_filter: distance in pixls between the y(0) of two sequential lines
@@ -147,7 +161,7 @@ def filter_center_lines(img_array, center_lines, slope_filter=0.01, y_filter=10)
 
     # delete very close lines
     good_slope_center_lines = sorted(good_slope_center_lines)
-    y_max = img_array.shape[0]
+    y_max = image_array.shape[0]
     for i in range(len(good_slope_center_lines) - 1):
         y = good_slope_center_lines[i][0][1]
         next_y = good_slope_center_lines[i + 1][0][1]
@@ -156,11 +170,11 @@ def filter_center_lines(img_array, center_lines, slope_filter=0.01, y_filter=10)
     return unique_center_lines
 
 
-def get_inspection_points(img_array, center_lines, blocks_vertices, points_per_line):
+def get_inspection_points(image_array, center_lines, blocks_vertices, points_per_line):
     """
     Define inspection points along the lines
 
-    :param img_array: Image in array format
+    :param image_array: Image in array format
     :param center_lines: List of line's points
     :param blocks_vertices: List of block's elements vertices
     :param points_per_line: Number of points to inspect per line
@@ -171,7 +185,7 @@ def get_inspection_points(img_array, center_lines, blocks_vertices, points_per_l
     for line in center_lines:
         a, b = get_line_parameters(line[0], line[1])
         x = 0
-        final_x = img_array.shape[1]
+        final_x = image_array.shape[1]
         inspection_point = []
         while x < final_x:
             y = a * x + b
@@ -180,7 +194,7 @@ def get_inspection_points(img_array, center_lines, blocks_vertices, points_per_l
                 polygon = Polygon(block_vertices)
                 if polygon.contains(point):
                     inspection_point.append((int(x), int(y)))
-            x += img_array.shape[1] / points_per_line
+            x += image_array.shape[1] / points_per_line
         inspection_points.append(inspection_point)
     return inspection_points
 
@@ -209,64 +223,64 @@ def get_text_from_lines(inspection_points, word_boxes):
     return full_text
 
 
-def print_img(img_array, f_size=20):
+def print_image(image_array, f_size=20):
     fig = plt.figure(figsize=(f_size,f_size))
-    plt.imshow(img_array)
+    plt.imshow(image_array)
 
 
-def draw_block_boxes(img_array, blocks_vertices, thickness=1):
+def draw_block_boxes(image_array, blocks_vertices, thickness=1):
     for block_vertices in blocks_vertices:
-        cv2.rectangle(img_array, pt1=block_vertices[0], pt2=block_vertices[2], color=(0,0,255), thickness=thickness)
+        cv2.rectangle(image_array, pt1=block_vertices[0], pt2=block_vertices[2], color=(0,0,255), thickness=thickness)
 
 
-def draw_center_lines(img_array, center_lines, thickness=1):
+def draw_center_lines(image_array, center_lines, thickness=1):
     for center_line in center_lines:
-        cv2.line(img_array, pt1=center_line[0], pt2=center_line[1], color=(255,0,0), thickness=thickness)
+        cv2.line(image_array, pt1=center_line[0], pt2=center_line[1], color=(255,0,0), thickness=thickness)
 
 
-def draw_inspection_points(img_array, inspection_points, radius=2):
+def draw_inspection_points(image_array, inspection_points, radius=2):
     for line in inspection_points:
         for inspection_point in line:
-            cv2.circle(img_array, inspection_point, radius, color=(255,0,0))
+            cv2.circle(image_array, inspection_point, radius, color=(255,0,0))
 
 
-def save_img(img_array, img_file):
-    file_ext = os.path.splitext(img_file)[1]
-    file_out = f'{os.path.splitext(img_file)[0]} - out.{file_ext}'
-    cv2.imwrite(file_out, img_array)
+def save_image(image_array, image_file):
+    file_ext = os.path.splitext(image_file)[1]
+    file_out = f'{os.path.splitext(image_file)[0]} - out.{file_ext}'
+    cv2.imwrite(file_out, image_array)
 
 
-def save_file(text_from_lines, img_file):
-    file_out = f'{os.path.splitext(img_file)[0]} - out.txt'
+def save_file(text_from_lines, image_file):
+    file_out = f'{os.path.splitext(image_file)[0]} - out.txt'
     with open(file_out, 'w') as f:
         for line in text_from_lines:
             f.write(str(line))
             f.write('\n')
 
 
-def get_text(img_file, exam_id):
-    response, img_array = get_response(img_file)
+def get_text(image_file, exam_id):
+    response, image_array = get_response(image_file)
     pages = get_pages(response)
 
     for page in pages:
         blocks_vertices = get_blocks_vertices(page)
         word_boxes = get_word_boxes(response)
-        center_lines = get_center_lines(img_array, word_boxes)
-        filtered_center_lines = filter_center_lines(img_array, center_lines)
-        inspection_points = get_inspection_points(img_array, filtered_center_lines, blocks_vertices, 100)
+        center_lines = get_center_lines(image_array, word_boxes)
+        filtered_center_lines = filter_center_lines(image_array, center_lines)
+        inspection_points = get_inspection_points(image_array, filtered_center_lines, blocks_vertices, 100)
         text_from_lines = get_text_from_lines(inspection_points, word_boxes)
 
         text_from_lines = '\n'.join(text_from_lines)
         exam = Exam.objects.get(id=exam_id)
-        exam.text_from_img = text_from_lines
+        exam.text_from_image = text_from_lines
         exam.save()
 
-        # draw_block_boxes(img_array, blocks_vertices, thickness=1)
-        # draw_center_lines(img_array, filtered_center_lines, thickness=1)
-        # draw_inspection_points(img_array, inspection_points, radius=2)
+        # draw_block_boxes(image_array, blocks_vertices, thickness=1)
+        # draw_center_lines(image_array, filtered_center_lines, thickness=1)
+        # draw_inspection_points(image_array, inspection_points, radius=2)
 
-        # save_file(text_from_lines, img_file)
-        # save_img(img_array, img_file)
+        # save_file(text_from_lines, image_file)
+        # save_image(image_array, image_file)
         return text_from_lines
 
 
