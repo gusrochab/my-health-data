@@ -271,7 +271,7 @@ def get_text(image_file, exam_id):
         text_from_lines = get_text_from_lines(inspection_points, word_boxes)
 
         text_from_lines = '\n'.join(text_from_lines)
-        exam = Exam.objects.get(id=exam_id)
+        exam = Exam.objects.filter(id=exam_id)
         logging.warning("-------exam--------")
         logging.warning(type(exam))
         logging.warning(exam)
