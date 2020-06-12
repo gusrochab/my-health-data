@@ -278,7 +278,7 @@ def get_text(image_file, exam_id):
         exam.text_from_image = text_from_lines
         logging.warning("-------exam--------")
         logging.warning(exam)
-        exam.save()
+        exam.update()
 
         # draw_block_boxes(image_array, blocks_vertices, thickness=1)
         # draw_center_lines(image_array, filtered_center_lines, thickness=1)
