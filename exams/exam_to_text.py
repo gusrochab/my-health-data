@@ -9,6 +9,7 @@ import numpy as np
 from .forms import ExamForm
 from .models import Exam
 from google.cloud import vision
+from io import BytesIO
 from PIL import Image
 from shapely.geometry import Point
 from shapely.geometry.polygon import Polygon
@@ -35,8 +36,6 @@ def get_response(image_file):
                       region_name='sa-east-1')
 
     image_binary = s3.get_object(Bucket=AWS_STORAGE_BUCKET_NAME, Key=image_file)['Body'].read()
-    logging.info(type(image_binary))
-    logging.info(image_binary)
 
     # with io.open(image_file, 'rb') as f:
     #     image_binary = f.read()
@@ -44,7 +43,7 @@ def get_response(image_file):
     vision_image = vision.types.Image(content=image_binary)
     client = vision.ImageAnnotatorClient()
     response = client.document_text_detection(image=vision_image)
-    image = Image.open(image_file)
+    image = Image.open(BytesIO(image_binary))
     image_array = np.array(image)
     return response, image_array
 
