@@ -258,7 +258,7 @@ def save_file(text_from_lines, image_file):
             f.write('\n')
 
 
-def get_text(image_file, exam_id):
+def get_text(image_file, exam_id, request):
     response, image_array = get_response(image_file)
     pages = get_pages(response)
 
@@ -272,7 +272,7 @@ def get_text(image_file, exam_id):
 
         text_from_lines = '\n'.join(text_from_lines)
         exam = Exam.objects.filter(id=exam_id)
-        exam_form = ExamForm(instance=exam,)
+        exam_form = ExamForm(request.POST, instance=exam)
         logging.warning("-------exam--------")
         logging.warning(f'exam type: {type(exam)}')
         logging.warning(f'exam: {exam}')
