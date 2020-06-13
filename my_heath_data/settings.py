@@ -84,12 +84,24 @@ WSGI_APPLICATION = 'my_heath_data.wsgi.application'
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases
 
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+#     }
+# }
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'd1hvtuhsqb4268',
+        'USER': 'lejzlxzgdvvuvf',
+        'PASSWORD': '59ea561022cdcd084020815e121b64d03ea68ca9bcce3da9111215bf9c784e4d',
+        'HOST': 'ec2-35-174-127-63.compute-1.amazonaws.com',
+        'PORT': '5432',
     }
 }
+
 
 import dj_database_url
 db_from_env = dj_database_url.config(conn_max_age=600)
