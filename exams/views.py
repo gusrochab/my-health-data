@@ -1,4 +1,3 @@
-import os
 import logging
 from django_q.tasks import async_task
 from django.contrib import messages
@@ -13,10 +12,8 @@ from .forms import ExamForm
 from .models import Exam
 from .exam_to_text import get_text
 
-logging.basicConfig(filename="views.log", level=logging.DEBUG,
-                   format='%(asctime)s:%(levelname)s:%(message)s')
-
-
+# logging.basicConfig(filename="views.log", level=logging.DEBUG,
+#                    format='%(asctime)s:%(levelname)s:%(message)s')
 
 
 def home(request):
@@ -25,7 +22,6 @@ def home(request):
 
 class ExamListView(LoginRequiredMixin, ListView):
     model = Exam
-    #template_name = 'exams/exam_list.html'
     context_object_name = 'exams'
     paginate_by = 5
 
@@ -46,16 +42,10 @@ def ExamCreateView(request):
             instance = exam_form.save(commit=False)
             instance.author = request.user
             instance.save()
-            cwd_dir = '/'.join(os.getcwd().split('/'))
-
-            # image_path = f'https://my-heath-data.s3.amazonaws.com/{image_file}'
-            # image_path = '{}/media/exam_pics/{}'.format(cwd_dir, image_file)
             async_task(get_text, instance)
-            #text_from_img = get_text(image_path, exam_id)
             # TODO parse_text(text_from_image)
             messages.success(request, f'We are analyzing your exam.')
-            return render(request, 'exams/home.html')
-            # return redirect(reverse('exam-detail', kwargs={'pk': instance.pk}))
+            return redirect(reverse('exam-list', kwargs={'username': request.user.username}))
         else:
             return HttpResponse("{}".format(exam_form.errors))
     else:
@@ -90,6 +80,7 @@ class ExamDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
 
     def get_success_url(self):
         return "/"
+
 
 def about(request):
     return render(request, 'exams/about.html', {'title': 'About'})

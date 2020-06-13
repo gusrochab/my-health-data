@@ -1,13 +1,10 @@
 import boto3
 import copy
-import io
 import logging
 import matplotlib.pyplot as plt
 import os
 import statistics
 import numpy as np
-from .forms import ExamForm
-from .models import Exam
 from google.cloud import vision
 from io import BytesIO
 from PIL import Image
@@ -16,8 +13,8 @@ from shapely.geometry.polygon import Polygon
 from .word_box import WordBox
 
 
-logging.basicConfig(filename="exam_to_text.log", level=logging.WARNING,
-                   format='%(asctime)s:%(levelname)s:%(message)s')
+# logging.basicConfig(filename="exam_to_text.log", level=logging.WARNING,
+#                    format='%(asctime)s:%(levelname)s:%(message)s')
 
 
 def get_response(image_file):
@@ -36,9 +33,6 @@ def get_response(image_file):
                       region_name='sa-east-1')
 
     image_binary = s3.get_object(Bucket=AWS_STORAGE_BUCKET_NAME, Key=image_file)['Body'].read()
-
-    # with io.open(image_file, 'rb') as f:
-    #     image_binary = f.read()
 
     vision_image = vision.types.Image(content=image_binary)
     client = vision.ImageAnnotatorClient()
@@ -128,6 +122,7 @@ def get_center_lines(image_array, word_boxes):
 
 def get_line_parameters(p1, p2):
     # y = ax + b
+
     try:
         a = (p2[1] - p1[1]) / (p2[0] - p1[0])
     except ZeroDivisionError:
@@ -228,26 +223,26 @@ def print_image(image_array, f_size=20):
     plt.imshow(image_array)
 
 
-def draw_block_boxes(image_array, blocks_vertices, thickness=1):
-    for block_vertices in blocks_vertices:
-        cv2.rectangle(image_array, pt1=block_vertices[0], pt2=block_vertices[2], color=(0,0,255), thickness=thickness)
-
-
-def draw_center_lines(image_array, center_lines, thickness=1):
-    for center_line in center_lines:
-        cv2.line(image_array, pt1=center_line[0], pt2=center_line[1], color=(255,0,0), thickness=thickness)
-
-
-def draw_inspection_points(image_array, inspection_points, radius=2):
-    for line in inspection_points:
-        for inspection_point in line:
-            cv2.circle(image_array, inspection_point, radius, color=(255,0,0))
-
-
-def save_image(image_array, image_file):
-    file_ext = os.path.splitext(image_file)[1]
-    file_out = f'{os.path.splitext(image_file)[0]} - out.{file_ext}'
-    cv2.imwrite(file_out, image_array)
+# def draw_block_boxes(image_array, blocks_vertices, thickness=1):
+#     for block_vertices in blocks_vertices:
+#         cv2.rectangle(image_array, pt1=block_vertices[0], pt2=block_vertices[2], color=(0,0,255), thickness=thickness)
+#
+#
+# def draw_center_lines(image_array, center_lines, thickness=1):
+#     for center_line in center_lines:
+#         cv2.line(image_array, pt1=center_line[0], pt2=center_line[1], color=(255,0,0), thickness=thickness)
+#
+#
+# def draw_inspection_points(image_array, inspection_points, radius=2):
+#     for line in inspection_points:
+#         for inspection_point in line:
+#             cv2.circle(image_array, inspection_point, radius, color=(255,0,0))
+#
+#
+# def save_image(image_array, image_file):
+#     file_ext = os.path.splitext(image_file)[1]
+#     file_out = f'{os.path.splitext(image_file)[0]} - out.{file_ext}'
+#     cv2.imwrite(file_out, image_array)
 
 
 def save_file(text_from_lines, image_file):
@@ -274,21 +269,6 @@ def get_text(instance):
         text_from_lines = '\n'.join(text_from_lines)
         instance.text_from_img = text_from_lines
         instance.save()
-        # image_file = str(instance.image)
-        # exam_id = int(instance.id)
-        # exam = Exam.objects.filter(id=exam_id)
-        # exam_form = ExamForm(request.POST, instance=exam)
-        logging.warning("-------exam--------")
-        logging.warning(f'exam type: {type(instance)}')
-        logging.warning(f'exam: {instance}')
-        logging.warning(f'exam: {instance.id}')
-        logging.warning(f'exam: {instance.text_from_img}')
-        # logging.warning(f'exam form type: {type(exam_form)}')
-        # logging.warning(f'exam form: {exam_form}')
-        # exam_form.text_from_img = text_from_lines
-        # logging.warning("-------exam--------")
-        # logging.warning(exam)
-        # exam_form.save()
 
         # draw_block_boxes(image_array, blocks_vertices, thickness=1)
         # draw_center_lines(image_array, filtered_center_lines, thickness=1)
@@ -296,8 +276,6 @@ def get_text(instance):
 
         # save_file(text_from_lines, image_file)
         # save_image(image_array, image_file)
-        logging.warning("################# Ran get_text #####################")
-        logging.warning(text_from_lines)
         return text_from_lines
 
 
