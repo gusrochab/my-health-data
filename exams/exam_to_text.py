@@ -258,7 +258,8 @@ def save_file(text_from_lines, image_file):
             f.write('\n')
 
 
-def get_text(image_file, exam_id, request):
+def get_text(instance):
+    image_file = str(instance.image)
     response, image_array = get_response(image_file)
     pages = get_pages(response)
 
@@ -271,17 +272,23 @@ def get_text(image_file, exam_id, request):
         text_from_lines = get_text_from_lines(inspection_points, word_boxes)
 
         text_from_lines = '\n'.join(text_from_lines)
-        exam = Exam.objects.filter(id=exam_id)
-        exam_form = ExamForm(request.POST, instance=exam)
+        instance.text_from_img = text_from_lines
+        instance.save()
+        # image_file = str(instance.image)
+        # exam_id = int(instance.id)
+        # exam = Exam.objects.filter(id=exam_id)
+        # exam_form = ExamForm(request.POST, instance=exam)
         logging.warning("-------exam--------")
-        logging.warning(f'exam type: {type(exam)}')
-        logging.warning(f'exam: {exam}')
-        logging.warning(f'exam form type: {type(exam_form)}')
-        logging.warning(f'exam form: {exam_form}')
-        exam_form.text_from_img = text_from_lines
+        logging.warning(f'exam type: {type(instance)}')
+        logging.warning(f'exam: {instance}')
+        logging.warning(f'exam: {instance.id}')
+        logging.warning(f'exam: {instance.text_from_img}')
+        # logging.warning(f'exam form type: {type(exam_form)}')
+        # logging.warning(f'exam form: {exam_form}')
+        # exam_form.text_from_img = text_from_lines
         # logging.warning("-------exam--------")
         # logging.warning(exam)
-        exam_form.save()
+        # exam_form.save()
 
         # draw_block_boxes(image_array, blocks_vertices, thickness=1)
         # draw_center_lines(image_array, filtered_center_lines, thickness=1)

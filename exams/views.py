@@ -47,11 +47,10 @@ def ExamCreateView(request):
             instance.author = request.user
             instance.save()
             cwd_dir = '/'.join(os.getcwd().split('/'))
-            image_file = str(instance.image)
+
             # image_path = f'https://my-heath-data.s3.amazonaws.com/{image_file}'
             # image_path = '{}/media/exam_pics/{}'.format(cwd_dir, image_file)
-            exam_id = int(instance.id)
-            async_task(get_text, image_file, exam_id, request)
+            async_task(get_text, instance)
             #text_from_img = get_text(image_path, exam_id)
             # TODO parse_text(text_from_image)
             messages.success(request, f'We are analyzing your exam.')
