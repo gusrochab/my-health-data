@@ -272,13 +272,16 @@ def get_text(image_file, exam_id):
 
         text_from_lines = '\n'.join(text_from_lines)
         exam = Exam.objects.filter(id=exam_id)
+        exam_form = ExamForm(instance=exam,)
         logging.warning("-------exam--------")
-        logging.warning(type(exam))
-        logging.warning(exam)
-        exam.text_from_img = text_from_lines
-        logging.warning("-------exam--------")
-        logging.warning(exam)
-        exam.save()
+        logging.warning(f'exam type: {type(exam)}')
+        logging.warning(f'exam: {exam}')
+        logging.warning(f'exam form type: {type(exam_form)}')
+        logging.warning(f'exam form: {exam_form}')
+        exam_form.text_from_img = text_from_lines
+        # logging.warning("-------exam--------")
+        # logging.warning(exam)
+        exam_form.save()
 
         # draw_block_boxes(image_array, blocks_vertices, thickness=1)
         # draw_center_lines(image_array, filtered_center_lines, thickness=1)
