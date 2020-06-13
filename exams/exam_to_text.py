@@ -39,7 +39,6 @@ def get_response(image_file):
     response = client.document_text_detection(image=vision_image)
     image = Image.open(BytesIO(image_binary))
     image_array = np.array(image)
-    logging.warning("################# Ran get_response #####################")
     return response, image_array
 
 
