@@ -8,7 +8,7 @@ certifi==2020.4.5.1
 chardet==3.0.4
 cycler==0.10.0
 dj-database-url==0.5.0
-Django==2.2
+Django==2.2.13
 django-crispy-forms==1.9.1
 django-heroku==0.3.1
 django-picklefield==2.1.1
